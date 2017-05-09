@@ -1,0 +1,196 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+
+	<style>
+  		body {padding-top: 50px;}
+	</style>
+    <title>Operation GB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="static/css/personal.css" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="/_ah/channel/jsapi"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+	<script type = "text/javascript" 
+         src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>	
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	
+	<script>
+			function EnterDocument(form_id) {
+				$(form_id).submit()
+			}
+			
+			function toggleOn(switch_id, value_id, input_id, new_value_id) {
+				$(switch_id).bootstrapToggle('on')
+				$(value_id).html($(input_id).val())
+				$(new_value_id).attr('value', $(input_id).val())
+			}
+			
+			function switchMoved() {
+				if($("#sql_source").prop('value')=="cloud")
+				{
+					$("#sql_source").val("local")
+				}
+				else
+				{
+					$("#sql_source").val("cloud")
+				}
+			}		
+
+			function toggle_on(file_label) {
+			  checkboxes = document.getElementsByName(file_label);
+			  for(var i=0, n=checkboxes.length;i<n;i++) {
+				a = checkboxes[i].getElementsByTagName("input")[0];
+				if (checkboxes[i].style.display != "none"){
+						a.checked = true;
+					}
+				}
+			}
+
+			function toggle_off(file_label) {
+			  checkboxes = document.getElementsByName(file_label);
+			  for(var i=0, n=checkboxes.length;i<n;i++) {
+				a = checkboxes[i].getElementsByTagName("input")[0];
+				if (checkboxes[i].style.display != "none"){
+						a.checked = false;
+					}
+				}
+			}		
+			
+			function toggle_row(row_ID){
+    
+				var d = document.getElementById("row_a_" + row_ID + "_detail").style.display;
+				
+				if(d == "none"){
+					document.getElementById("row_a_" + row_ID + "_detail").style.display = "table-row";
+				}
+				else{
+					document.getElementById("row_a_" + row_ID + "_detail").style.display = "none";
+				}
+			}
+			function toggle_row_2(row_ID){
+				
+				var d = document.getElementById("row_b_" + row_ID + "_detail").style.display;
+				
+				if(d == "none"){
+					document.getElementById("row_b_" + row_ID + "_detail").style.display = "table-row";
+				}
+				else{
+					document.getElementById("row_b_" + row_ID + "_detail").style.display = "none";
+				}
+			}
+			
+			function Filter(ul_type, input_type) {
+				// Declare variables
+				var input, filter, ul, li, a, i;
+				input = document.getElementById(input_type);
+				filter = input.value.toUpperCase();
+				ul = document.getElementById(ul_type);
+				li = ul.getElementsByTagName('li');
+
+				// Loop through all list items, and hide those who don't match the search query
+				for (i = 0; i < li.length; i++) {
+					a = li[i].getElementsByTagName("label")[0];
+					if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+						li[i].style.display = "";
+					} else {
+						li[i].style.display = "none";
+					}
+				}
+			}
+			
+			function Clear(ul_type, input_type) {
+				input = document.getElementById(input_type);
+				input.value = "";
+				ul = document.getElementById(ul_type);
+				li = ul.getElementsByTagName('li');
+
+				// Loop through all list items, and hide those who don't match the search query
+				for (i = 0; i < li.length; i++) {
+					li[i].style.display = "";
+					}
+			}
+			
+			function validateName(){
+				var val = document.forms["train_form"]["model_name"].value;
+				var models_array = document.getElementsByName("existing_models")[0].value;
+				
+				if (val == ""){
+					alert("Model name cannot be blank");
+					return false;
+				}
+				else if (models_array.indexOf(val) > -1){
+					var r = confirm("Model exists with this name. Overwrite?");
+					if (r == true){
+						return true;
+					}
+					else{
+						return false;
+						}
+				}
+
+				else{
+					return true;
+				}
+				
+			}
+			
+			function validateThreshold(){
+				var val = document.forms["concept_run_form"]["threshold"].value;
+				
+				if (val > 0 && val < 1){
+					return true;
+				}
+				else{
+					alert("Similarity value must be number between 0 and 1")
+					return false;
+				}
+				
+				
+			}
+	</script>
+          
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+<!-- ################# CHANGE THIS ################## -->
+        <a class="navbar-brand" target="/">DataSieve Sandbox</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Home</a></li>
+
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+  
+
+  <div style='padding-top: 15px; padding-bottom: 15px; margin-bottom: 15px; color: inherit; background-color: #eee;'>
+    <div class="container">
+      <h1 id="demo">Beat the Streak</h1>
+      <p class="lead">Jake is a stupid nerd.</a>
+    </div>
+  </div>
+
+
+
+{% block body %}{% endblock %}
