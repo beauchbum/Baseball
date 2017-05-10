@@ -36,7 +36,7 @@ def index():
     conn = cloud_sql_connect()
     cursor = conn.cursor()
 
-    date1 = str(date.today())
+    date1 = '2017-05-09'
     date2 = '2017-10-01'
     start = datetime.datetime.strptime(date1, '%Y-%m-%d')
     end = datetime.datetime.strptime(date2, '%Y-%m-%d')
