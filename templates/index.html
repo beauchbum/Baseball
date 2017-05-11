@@ -108,6 +108,7 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 				</h4>
 	 		</div>
 	 		<div id = "{{ d }}" class="panel-collapse collapse">
+	 				<FORM action='/' method="POST"><input type=hidden name="date" value="{{ d }}">
 					<div class="panel-body"> 
 					<div class="form-group">
 					    <div class='col-xs-2'>
@@ -131,7 +132,7 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 					      <select class="form-control" name="player2_team">
 					      {% for team in teams %}
 					        <option>{{ team }}</option>
-					      {% endfor %}
+					      {% endfor %}`
 					      </select>
 					      </div>
 					    <div class='col-xs-2'>
@@ -139,8 +140,9 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 							<input name="percent" type="text" class="form-control" placeholder="0">
 						</div>
 						<div class='col-xs-2'>
-							<button type="button" class="btn btn-success">Add</button>
+							<button type="submit" class="btn btn-success">Add</button>
 						</div>
+						</FORM>
 					</div>
 					<div class="clearfix"></div>
 
@@ -159,14 +161,16 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 					    </thead>
 					    <tbody>
 					    {% for p in dates_dict[d] %}
+					    <form action="/" method="POST"><input type=hidden name="exist_pick" value="{{ p.id }}">
 					      <tr>
 					        <td>{{ p.name1 }}</td>
 					        <td>{{ p.team1 }}</td>
 					        <td>{{ p.name2 }}</td>
 					        <td>{{ p.team2 }}</td>
 					        <td>{{ p.percent + '%' }}</td>
-					        <td><button type="button" class="btn btn-danger">Remove</button>
+					        <td><button type="submit" class="btn btn-danger">Remove</button>
 					      </tr>
+					      </form>
 					     {% endfor %}
 					    </tbody>
 					  </table>
