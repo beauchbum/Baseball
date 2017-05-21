@@ -3,6 +3,7 @@ import sys
 import datetime
 from datetime import date
 import MySQLdb
+import time
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -37,12 +38,16 @@ def index():
     conn = cloud_sql_connect()
     cursor = conn.cursor()
 
-    date1 = '2017-05-09'
+    step = datetime.timedelta(days=1)
+
+
+    date1 = str(time.strftime("%Y-%m-%d"))
     date2 = '2017-10-01'
     start = datetime.datetime.strptime(date1, '%Y-%m-%d')
+    start-=step
+    start-=step
     end = datetime.datetime.strptime(date2, '%Y-%m-%d')
 
-    step = datetime.timedelta(days=1)
     dates_dict = {}
     dates = []
     while start <= end:
@@ -92,7 +97,10 @@ def index():
     res = cursor.fetchall()
     for r in res:
         d = {"id":r[0], "name1":r[2], "team1":r[3], "name2":r[4], "team2":r[5], "percent":str(r[6])}
-        dates_dict[str(r[1])].append(d)
+        try:
+            dates_dict[str(r[1])].append(d)
+        except:
+            pass
 
 
 
