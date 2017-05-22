@@ -111,7 +111,26 @@ def index():
     else:
         return render_template('index.html', dates=dates, dates_dict=dates_dict, teams=teams)
 
+@app.route('/stats', methods=['GET', 'POST'])
+def stats():
 
+    conn = cloud_sql_connect()
+    cursor = conn.cursor()
+    streaks = []
+
+    query = "select current_streak, count(1) from accounts where active = 1 group by current_streak order by current_streak desc"
+    cursor.execute(query)
+    res = cursor.fetchall()
+    streaks = res
+
+    query = "select count(1) from accounts where active = 1"
+    cursor.execute(query)
+    res = cursor.fetchall()
+    total = res[0][0]
+
+    cursor.close();
+    conn.close()
+    return render_template("stats.html", streaks = streaks, total = total)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000)
