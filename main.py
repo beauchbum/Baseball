@@ -2,7 +2,7 @@ from flask import Flask, render_template, make_response, redirect, url_for, requ
 import sys
 import datetime
 from datetime import date, datetime, timedelta
-import pymysql
+#import pymysql
 import time
 import MySQLdb
 
