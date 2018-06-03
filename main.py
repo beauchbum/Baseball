@@ -2,9 +2,9 @@ from flask import Flask, render_template, make_response, redirect, url_for, requ
 import sys
 import datetime
 from datetime import date, datetime, timedelta
-#import pymysql
+import pymysql
 import time
-import MySQLdb
+#import MySQLdb
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -19,8 +19,8 @@ def cloud_sql_connect():
     CLOUDSQL_PROJECT = app.config['CLOUDSQL_PROJECT']
     CLOUDSQL_INSTANCE = app.config['CLOUDSQL_INSTANCE']
 
-    conn = MySQLdb.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
-                               host=cloud_dbhost, passwd=cloud_dbpass, db=cloud_dbname)
+    conn = pymysql.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
+                               host=cloud_dbhost, password=cloud_dbpass, db=cloud_dbname)
 
     return conn
 
@@ -134,4 +134,4 @@ def stats():
     return render_template("stats.html", streaks = streaks, total = total)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000)
+    app.run(port=8000,debug=True)
