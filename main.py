@@ -19,8 +19,8 @@ def cloud_sql_connect():
     CLOUDSQL_PROJECT = app.config['CLOUDSQL_PROJECT']
     CLOUDSQL_INSTANCE = app.config['CLOUDSQL_INSTANCE']
 
-    conn = MySQLdb.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
-                               host=cloud_dbhost, passwd=cloud_dbpass, db=cloud_dbname)
+    conn = MySQLdb.connect(cloudsql_unix_socket='/cloudsql/{}'.format(CLOUDSQL_INSTANCE), user=cloud_dbuser,
+                               passwd=cloud_dbpass, db=cloud_dbname)
 
     return conn
 
