@@ -109,7 +109,7 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 				</h4>
 	 		</div>
 	 		<div id = "{{ d }}" class="panel-collapse collapse">
-	 				<FORM action='/' method="POST"><input type=hidden name="date" value="{{ d }}">
+	 				<FORM action='/' method="GET"><input type=hidden name="date" value="{{ d }}">
 					<div class="panel-body"> 
 					<div class="form-group">
 					    <div class='col-xs-2'>
@@ -162,7 +162,7 @@ tr.datalisttr:nth-child(even) {background: #F0F8FF; padding-top:0em;}
 					    </thead>
 					    <tbody>
 					    {% for p in dates_dict[d] %}
-					    <form action="/" method="POST"><input type=hidden name="exist_pick" value="{{ p.id }}">
+					    <form action="/" method="GET"><input type=hidden name="exist_pick" value="{{ p.id }}">
 					      <tr>
 					        <td>{{ p.name1 }}</td>
 					        <td>{{ p.team1 }}</td>

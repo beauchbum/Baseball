@@ -1,15 +1,13 @@
 from flask import Flask, render_template, make_response, redirect, url_for, request
 import sys
 import datetime
-from datetime import date
-import MySQLdb
+from datetime import date, datetime, timedelta
+import pymysql
 import time
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 #vendor.add('lib')
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 def cloud_sql_connect():
 
@@ -17,37 +15,41 @@ def cloud_sql_connect():
     cloud_dbhost = app.config['DBHOST']
     cloud_dbuser = app.config['DBUSER']
     cloud_dbname = app.config['DBNAME']
-    cloud_dbport = app.config['DBPORT']
     CLOUDSQL_PROJECT = app.config['CLOUDSQL_PROJECT']
     CLOUDSQL_INSTANCE = app.config['CLOUDSQL_INSTANCE']
 
-    conn = MySQLdb.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
-                               host=cloud_dbhost, passwd=cloud_dbpass, db=cloud_dbname)
+    conn = pymysql.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
+                               host=cloud_dbhost, password=cloud_dbpass, db=cloud_dbname)
 
     return conn
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    args = request.args
 
     error = None
 
-    teams = ["NULL", "ATL", "BAL", "BOS", "CHC", "CWS", 'CIN', 'CLE', 'COL', 'DET', 'FLA', 'HOU', 'KAN', 'LAA', 'LAD', 'MIL', 'MIN', 'NYM', 'NYY', 'OAK', 'PHI', 'PIT', 'SD', 'SF', 'SEA', 'STL', 'TB', 'TEX', 'TOR', 'WSH']
+    teams = ["NULL", "ATL", "BAL", "BOS", "CHC",
+             "CWS", 'CIN', 'CLE', 'COL', 'DET',
+             'FLA', 'HOU', 'KAN', 'LAA', 'LAD',
+             'MIL', 'MIN', 'NYM', 'NYY', 'OAK',
+             'PHI', 'PIT', 'SD', 'SF', 'SEA',
+             'STL', 'TB', 'TEX', 'TOR', 'WSH']
 
 
     conn = cloud_sql_connect()
     cursor = conn.cursor()
 
-    step = datetime.timedelta(days=1)
+    step = timedelta(days=1)
 
 
-    date1 = str(time.strftime("%Y-%m-%d"))
-    date2 = '2017-10-01'
-    start = datetime.datetime.strptime(date1, '%Y-%m-%d')
+    date1 = datetime.now().strftime("%Y-%m-%d")
+    date2 = (datetime.now()+timedelta(days=5)).strftime("%Y-%m-%d")
+    #date2 = '2018-09-30'
+    start = datetime.strptime(date1, '%Y-%m-%d')
     start-=step
-    start-=step
-    end = datetime.datetime.strptime(date2, '%Y-%m-%d')
-
+    end = datetime.strptime(date2, '%Y-%m-%d')
     dates_dict = {}
     dates = []
     while start <= end:
@@ -55,27 +57,27 @@ def index():
         dates_dict[str(start.date())] = []
         start += step
 
-    if "date" in request.form:
+    if "date" in args:
 
-        this_date = request.form['date']
+        this_date = args['date']
         max_percent = 100
         for d2 in dates_dict[this_date]:
             max_percent -= int(d2["percent"])
 
-        player1 = request.form['player1_name']
-        team1 = request.form['player1_team']
-        player2 = request.form['player2_name']
-        team2 = request.form['player2_team']
+        player1 = args['player1_name'] if args['player1_name'] else None
+        team1 = None if args['player1_team'] == 'NULL' else args['player1_team']
+        player2 = args['player2_name'] if args['player2_name'] else None
+        team2 = None if args['player2_team'] == 'NULL' else args['player2_team']
+
+        if not ((player1 and team1) or (player2 and team2)):
+            error = "Must fill out a player and team"
 
         try:
-            percent = int(request.form['percent'])
+            percent = int(args['percent'])
             if percent < 0 or percent > max_percent:
                 error = "Percent must be between 0 and %s" % max_percent
         except:
             error = "Percent must be a number"
-
-        if len(player1.strip()) == 0 or len(player2.strip()) == 0:
-            error = "Cannot leave fields blank"
 
         if error is None:
             query = "Insert into future_picks(date, player_1, team_1, player_2, team_2, percent, active) values(%s,%s,%s,%s,%s,%s, 1)"
@@ -83,11 +85,11 @@ def index():
             cursor.execute(query, param)
             conn.commit()
         else:
-            print error
+            print(error)
 
-    if "exist_pick" in request.form:
-        delete_id = request.form['exist_pick']
-        query = "update future_picks set active=0 where id=%s"
+    if "exist_pick" in args:
+        delete_id = args['exist_pick']
+        query = "update future_picks set active=0 where ID=%s"
         param = [delete_id]
         cursor.execute(query, param)
         conn.commit()
@@ -95,19 +97,18 @@ def index():
     query = "select * from future_picks where active=1"
     cursor.execute(query)
     res = cursor.fetchall()
+    print(res)
     for r in res:
-        d = {"id":r[0], "name1":r[2], "team1":r[3], "name2":r[4], "team2":r[5], "percent":str(r[6])}
+        d = {"id":r[-1], "name1":r[1], "team1":r[2], "name2":r[3], "team2":r[4], "percent":str(r[5])}
         try:
-            dates_dict[str(r[1])].append(d)
+            dates_dict[str(r[0])].append(d)
         except:
             pass
 
-
-
     cursor.close(); conn.close()
 
-    if error is None:
-        return render_template('index.html', dates=dates, dates_dict=dates_dict, teams=teams)
+    if args:
+        return redirect(url_for('index'))
     else:
         return render_template('index.html', dates=dates, dates_dict=dates_dict, teams=teams)
 
@@ -116,7 +117,6 @@ def stats():
 
     conn = cloud_sql_connect()
     cursor = conn.cursor()
-    streaks = []
 
     query = "select current_streak, count(1) from accounts where active = 1 group by current_streak order by current_streak desc"
     cursor.execute(query)

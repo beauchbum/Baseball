@@ -1,0 +1,8 @@
+name: baseball
+dependencies:
+  - python=3.6.1
+  - flask
+  - pandas
+  - numpy
+  - pymysql
+  - pip:
