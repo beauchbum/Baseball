@@ -4,6 +4,7 @@ import datetime
 from datetime import date, datetime, timedelta
 import pymysql
 import time
+import MySQLdb
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -18,7 +19,7 @@ def cloud_sql_connect():
     CLOUDSQL_PROJECT = app.config['CLOUDSQL_PROJECT']
     CLOUDSQL_INSTANCE = app.config['CLOUDSQL_INSTANCE']
 
-    conn = pymysql.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
+    conn = MySQLdb.connect(unix_socket='/cloudsql/{}:{}'.format(CLOUDSQL_PROJECT, CLOUDSQL_INSTANCE), user=cloud_dbuser,
                                host=cloud_dbhost, password=cloud_dbpass, db=cloud_dbname)
 
     return conn
